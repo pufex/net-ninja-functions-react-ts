@@ -2,6 +2,8 @@ import type { FormEvent } from "react"
 
 import { useState } from "react"
 import { useInput } from "../hooks/useInput/hooks/useInput/useInput"
+import { useDatabase } from "../contexts/Database"
+import { useNavigate } from "react-router-dom"
 
 import Input from "../components/Input"
 import Button from "../components/Button"
@@ -10,13 +12,17 @@ import { validateEmail } from "../utils/validations"
 
 const Register = () => {
     
+    const navigate = useNavigate();
+
+    const {currentUser, login} = useDatabase();
+
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
 
     const [email, handleEmailChange, setEmailError] = useInput({})
     const [password, handlePasswordChange, setPasswordError] = useInput({})
     
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError("")
         setEmailError()
@@ -42,6 +48,7 @@ const Register = () => {
 
         try{
           setLoading(true)
+          await login(email.value, password.value)
         }catch(error){
           console.error(error)
           setError("Failed to register.")
@@ -50,8 +57,10 @@ const Register = () => {
 
     }
 
+    if(currentUser) navigate("/")
+
     return <main className="w-full min-h-[100vh] grid place-items-center">
-        <section className="w-full px-8 py-12 max-w-[400px] rounded-xl shadow-lg flex flex-col border-[1px] border-gray-300">
+        <section className="w-full px-8 py-12 max-w-[400px] rounded-xl shadow-lg flex flex-col border-[1px] border-gray-300 bg-white">
             <h1 className="w-full text-center text-4xl font-semibold text-black mb-4">
                 Log In
             </h1>

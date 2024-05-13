@@ -11,6 +11,7 @@
     "styles": "npx tailwindcss -i ./src/assets/App.css -o ./src/output.css"
   },
   "dependencies": {
+    "firebase": "^10.12.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.2.1",
