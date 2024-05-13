@@ -5,6 +5,7 @@ import { useInput } from "../hooks/useInput/hooks/useInput/useInput"
 import Input from "./Input";
 import Button from "./Button";
 import CloseModal from "./CloseModal";
+import { useDatabase } from "../contexts/Database";
 
 type RequestModalProps = {
   closeModal: () => void,
@@ -14,6 +15,8 @@ type RequestModalProps = {
 const RequestModal = ({
   closeModal,
 }: RequestModalProps) => {
+
+  const {addRequest} = useDatabase();
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -34,6 +37,7 @@ const RequestModal = ({
 
     try{
       setLoading(true);
+      await addRequest(title.value)
     }catch(error){
       console.error(error);
       setError("Failed to add request.")

@@ -9,7 +9,7 @@ import {
     db,
     requestsRef
 } from "../firebase"
-import { doc, getDoc, onSnapshot, setDoc } from "firebase/firestore"
+import { addDoc, doc, getDoc, onSnapshot, setDoc } from "firebase/firestore"
 
 export type FetchStatus = "static" | "error" | "loading"
 
@@ -30,6 +30,7 @@ export type LoginFunction = (email: string, password: string) => Promise<unknown
 export type LogoutFunction = () => Promise<unknown>
 
 export type GrabRequestsFunction = () => void
+export type AddRequestFunction = (title: string) => Promise<unknown>
 
 export type DatabaseContextType = {
     currentUser: User | null,
@@ -42,7 +43,7 @@ export type DatabaseContextType = {
     requests: RequestType[],
     grabRequests: GrabRequestsFunction,
     loadingRequestsStatus: FetchStatus,
-
+    addRequest: AddRequestFunction,
 }
 
 const DatabaseContext = createContext<DatabaseContextType | null>(null)
@@ -81,6 +82,9 @@ const DatabaseProvider = ({
                         console.error(error)
                         setCurrentUser(null);
                     })
+            }else{
+                setCurrentUser(null)
+                setCurrentDocument(undefined)
             }
             setLoading(false)
         }) 
@@ -130,6 +134,13 @@ const DatabaseProvider = ({
             })
     }
 
+    const addRequest: AddRequestFunction = (title) => {
+        return addDoc(requestsRef, {
+            title,
+            content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+        })
+    }
+
     const value: DatabaseContextType = {
         currentUser,
         currentDocument,
@@ -138,7 +149,8 @@ const DatabaseProvider = ({
         logout,
         requests,
         grabRequests,
-        loadingRequestsStatus
+        loadingRequestsStatus,
+        addRequest,
     }
 
     return <DatabaseContext.Provider

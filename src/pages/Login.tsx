@@ -2,9 +2,11 @@ import type { FormEvent } from "react"
 
 import { useState } from "react"
 import { useInput } from "../hooks/useInput/hooks/useInput/useInput"
+import { useStorageInput } from "../hooks/useInput/hooks/useInput/useStorageInput"
 import { useDatabase } from "../contexts/Database"
 import { useNavigate } from "react-router-dom"
 
+import {Link} from 'react-router-dom'
 import Input from "../components/Input"
 import Button from "../components/Button"
 
@@ -19,7 +21,7 @@ const Register = () => {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
 
-    const [email, handleEmailChange, setEmailError] = useInput({})
+    const [email, handleEmailChange, setEmailError] = useStorageInput({key: "login-email-5"})
     const [password, handlePasswordChange, setPasswordError] = useInput({})
     
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -98,6 +100,9 @@ const Register = () => {
                     Log In
                 </Button>
             </form>
+            <span className="block w-full text-center pt-8 text-lg font-medium">
+                No account? <Link to="/register" className="text-sky-700">Create one!</Link>
+            </span>
         </section>
     </main>
   

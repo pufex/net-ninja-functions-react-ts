@@ -849,12 +849,12 @@ video {
   padding-bottom: 3rem;
 }
 
-.pb-1 {
-  padding-bottom: 0.25rem;
-}
-
 .pt-14 {
   padding-top: 3.5rem;
+}
+
+.pt-8 {
+  padding-top: 2rem;
 }
 
 .text-center {
@@ -949,6 +949,11 @@ body, html, #root{
 .focus-within\:border-amber-500:focus-within {
   --tw-border-opacity: 1;
   border-color: rgb(245 158 11 / var(--tw-border-opacity));
+}
+
+.hover\:bg-amber-500:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(245 158 11 / var(--tw-bg-opacity));
 }
 
 .hover\:brightness-110:hover {

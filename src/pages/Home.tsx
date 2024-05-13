@@ -32,7 +32,7 @@ const Home = () => {
                 Tutorial Requests
             </h1>
         </header>
-        <section className="w-full flex flex-column gap-3 mt-4">
+        <section className="w-full flex flex-col gap-3 mt-4">
             {
                 requests.length
                     ? requests.map(({title, content}) => {

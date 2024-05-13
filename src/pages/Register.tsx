@@ -5,6 +5,7 @@ import { useInput } from "../hooks/useInput/hooks/useInput/useInput"
 import { useDatabase } from "../contexts/Database"
 import { useNavigate } from "react-router-dom"
 
+import {Link} from 'react-router-dom'
 import Input from "../components/Input"
 import Button from "../components/Button"
 
@@ -98,6 +99,9 @@ const Register = () => {
                     Register
                 </Button>
             </form>
+            <span className="block w-full text-center pt-8 text-lg font-medium">
+                Already registered? <Link to="/login" className="text-sky-700">Sign in!</Link>
+            </span>
         </section>
     </main>
   
