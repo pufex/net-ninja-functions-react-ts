@@ -5,11 +5,13 @@ import { createContext, useContext, useEffect, useRef, useState } from "react"
 import LoadingPage from "../pages/LoadingPage"
 
 import {
+    functions,
     auth,
     db,
     requestsRef
 } from "../firebase"
-import { addDoc, doc, getDoc, onSnapshot, setDoc } from "firebase/firestore"
+import { doc, onSnapshot, orderBy, query } from "firebase/firestore"
+import { httpsCallable } from "firebase/functions"
 
 export type FetchStatus = "static" | "error" | "loading"
 
@@ -17,13 +19,17 @@ export type UserDocumentType = {
     id: string,
     bio: string,
     email: string,
+    upvotedOn: string[],
 }
 
 export type RequestType = {
     id: string,
     title: string,
     content: string,
+    upvotes: number,
 }
+
+export type SayHelloFunction = (name: string) => Promise<any>
 
 export type RegisterFunction = (email: string, password: string) => Promise<unknown>
 export type LoginFunction = (email: string, password: string) => Promise<unknown>
@@ -31,8 +37,12 @@ export type LogoutFunction = () => Promise<unknown>
 
 export type GrabRequestsFunction = () => void
 export type AddRequestFunction = (title: string) => Promise<unknown>
+export type UpvoteRequestFunction = (id: string) => Promise<unknown>
 
 export type DatabaseContextType = {
+
+    sayHello: SayHelloFunction,
+
     currentUser: User | null,
     currentDocument?: UserDocumentType
 
@@ -43,7 +53,8 @@ export type DatabaseContextType = {
     requests: RequestType[],
     grabRequests: GrabRequestsFunction,
     loadingRequestsStatus: FetchStatus,
-    addRequest: AddRequestFunction,
+    addNewRequest: AddRequestFunction,
+    upvoteRequest: UpvoteRequestFunction,
 }
 
 const DatabaseContext = createContext<DatabaseContextType | null>(null)
@@ -62,47 +73,48 @@ const DatabaseProvider = ({
     children
 }:DatabaseProviderProps) => {
 
-    const [loading, setLoading] = useState(true);
+    const helloFunction = httpsCallable(functions, "sayHello")
+    const sayHello: SayHelloFunction = async (name) => {
+        return helloFunction({name})
+    }
 
     const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true);
     const [currentDocument, setCurrentDocument] = useState<UserDocumentType | undefined>();
+    const [loadingDoc, setLoadingDoc] = useState(true);
+    const userDocRef = useRef<Function>();
 
     useEffect(() => {
         const unsub = auth.onAuthStateChanged((user) => {
             setLoading(true);
             if(user){
                 setCurrentUser(user);
+                if(userDocRef.current)
+                    userDocRef.current();
                 const userRef = doc(db, "users", user.uid)
-                getDoc(userRef)
-                    .then((snapshot) => {
-                        // @ts-expect-error
-                        setCurrentDocument({...snapshot.data(), id: snapshot.id})
-                    })
-                    .catch((error) => {
-                        console.error(error)
-                        setCurrentUser(null);
-                    })
+                userDocRef.current = onSnapshot(userRef, (snapshot) => {
+                    // @ts-expect-error
+                    setCurrentDocument({...snapshot.data(), id: snapshot.id})
+                    setLoadingDoc(false)
+                }, (err) => {
+                    console.error(err)
+                })
             }else{
                 setCurrentUser(null)
                 setCurrentDocument(undefined)
+                setLoadingDoc(false)
             }
             setLoading(false)
         }) 
-        return unsub
+        return () => {
+            unsub();
+            if(userDocRef.current instanceof Function)
+            userDocRef.current();
+        }
     }, [])
 
     const register: RegisterFunction = (email, password) => {
         return createUserWithEmailAndPassword(auth, email, password)
-            .then((user) => {
-                const userRef = doc(db, "users", user.user.uid)
-                setDoc(userRef, {
-                    email,
-                    bio: "",
-                })
-            })
-            .catch((error) => {
-                console.error(error)
-            })
     }
 
     const login: LoginFunction = (email, password) => {
@@ -118,8 +130,9 @@ const DatabaseProvider = ({
     const unsubRequests = useRef<Function>()
 
     const grabRequests = () => {
-        if(!unsubRequests.current)
-            unsubRequests.current = onSnapshot(requestsRef, (snapshot) => {
+        if(!unsubRequests.current){
+            const requestsQuery = query(requestsRef, orderBy("upvotes", "desc"))
+            unsubRequests.current = onSnapshot(requestsQuery, (snapshot) => {
                 setLoadingRequests("loading")
                 const requestArr: RequestType[] = [];
                 snapshot.docs.forEach((doc) => {
@@ -132,16 +145,21 @@ const DatabaseProvider = ({
                 console.error(err)
                 setLoadingRequests("error");
             })
+        }
     }
 
-    const addRequest: AddRequestFunction = (title) => {
-        return addDoc(requestsRef, {
-            title,
-            content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-        })
+    const addRequest = httpsCallable(functions, "addRequest")
+    const addNewRequest: AddRequestFunction = (title) => {
+        return addRequest({title})
+    }
+
+    const upvoteRequestFunction = httpsCallable(functions, "upvoteRequest")
+    const upvoteRequest: UpvoteRequestFunction = (id) => {
+        return upvoteRequestFunction({id});
     }
 
     const value: DatabaseContextType = {
+        sayHello,
         currentUser,
         currentDocument,
         register,
@@ -150,18 +168,19 @@ const DatabaseProvider = ({
         requests,
         grabRequests,
         loadingRequestsStatus,
-        addRequest,
+        addNewRequest,
+        upvoteRequest,
     }
 
     return <DatabaseContext.Provider
         value={value}
     >
         {
-            !loading 
-                ? children instanceof Function
+            loading || loadingDoc
+                ? <LoadingPage />
+                : children instanceof Function
                     ? children()
                     : children
-                : <LoadingPage />
         }
     </DatabaseContext.Provider>
 }

@@ -90,11 +90,11 @@ const Input = ({
                         {
                             showPassword
                                 ? <FaUnlock
-                                    size={30}
+                                    size={25}
                                     className="absolute top-0 left-0 right-0 bottom-0 m-auto"
                                 />
                                 : <FaLock
-                                    size={30}
+                                    size={25}
                                     className="absolute top-0 left-0 right-0 bottom-0 m-auto"
                                 />
                         }

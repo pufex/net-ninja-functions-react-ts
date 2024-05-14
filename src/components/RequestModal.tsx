@@ -16,13 +16,13 @@ const RequestModal = ({
   closeModal,
 }: RequestModalProps) => {
 
-  const {addRequest} = useDatabase();
+  const {addNewRequest} = useDatabase();
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
   useEffect(() => {
-    console.error(error)
+    console.error(!error ? "There has been an error." : error)
   }, [error])
 
   const [title, handleTitleChange, setTitleError] = useInput({});
@@ -37,7 +37,7 @@ const RequestModal = ({
 
     try{
       setLoading(true);
-      await addRequest(title.value)
+      await addNewRequest(title.value)
     }catch(error){
       console.error(error);
       setError("Failed to add request.")
@@ -48,11 +48,17 @@ const RequestModal = ({
 
   return <div className="fixed inset-0 grid place-items-center z-50">
     <div className="absolute inset-0 bg-black/70"></div>
-    <div className="relative bg-white w-full max-w-[400px] shadow-lg rounded-3xl border-[1px] border-gray-600 z-2 flex flex-col items-center gap-4 px-8 py-12 pt-14">
+    <div className="relative bg-white w-full max-w-[400px] shadow-lg rounded-3xl border-[1px] border-gray-600 z-2 flex flex-col items-center gap-4 px-8 py-12 pt-14 animate-fadein">
       <CloseModal onClick={closeModal} top="1rem" right="1rem" />
       <h1 className="font-bold text-4xl text-black mb-2">
         Request a Tutorial
       </h1>
+      {
+        error 
+          && <h2 className=" w-full text-center text-lg text-red-600 font-semibold">
+            {error}
+          </h2>
+      }
       <form
         onSubmit={handleSubmit}
         className="w-full flex flex-col gap-4"

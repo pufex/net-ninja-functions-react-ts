@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,4 +6,59 @@ body, html, #root{
     width: 100%;
     min-height: 100vh;
     background-color: #F5F5F5;
+}
+
+@layer components {
+    .animate-fadein{
+        animation: fadeIn 500ms cubic-bezier(.22,.81,.4,.81) 0ms forwards;
+    }
+
+    @keyframes fadeIn {
+        from{
+            opacity: 0;
+            transform: translateY(-50%);
+        }to{
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-slidein {
+        animation: slideIn 500ms ease-out 0ms forwards;
+    }
+    
+    @keyframes slideIn{
+        from{
+            transform: translateY(-100%) translateX(-50%);
+        }to{
+            transform: translateY(2.5rem) translateX(-50%);
+        }
+    }
+    
+    .animate-slideout{
+        animation: slideOut 500ms ease-out 0ms forwards
+    }
+
+    @keyframes slideOut{
+        from{
+            transform: translateY(2.5rem) translateX(-50%);
+        }to{
+            transform: translateY(-100%) translateX(-50%);
+        }
+    }
+
+    .animation-shrinkX{
+        transform-origin: left;
+        animation: shrinkX linear 0ms forwards;
+    }
+
+    @keyframes shrinkX {
+        from{
+            transform: scaleX(1);
+        }
+        to{
+            transform: scaleX(0);
+        }
+    }
+
 }

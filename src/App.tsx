@@ -3,6 +3,7 @@ import {Routes, Route} from "react-router-dom"
 import Home from "./pages/Home"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
+import ErrorPage from "./pages/ErrorPage"
 
 import IconsProvider from "./contexts/Icons"
 import DatabaseProvider from "./contexts/Database"
@@ -27,11 +28,15 @@ function App() {
         </Route>
         <Route 
           path="/login"
-          element={<Login/>}
+          element={<Login />}
         />
         <Route 
           path="/register"
-          element={<Register/>}
+          element={<Register />}
+        />
+        <Route 
+          path="/*"
+          element={<ErrorPage />}
         />
       </Routes>
     </DatabaseProvider>

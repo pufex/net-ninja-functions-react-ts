@@ -22,7 +22,7 @@ const Register = () => {
     const [error, setError] = useState("")
 
     const [email, handleEmailChange, setEmailError] = useStorageInput({key: "login-email-5"})
-    const [password, handlePasswordChange, setPasswordError] = useInput({})
+    const [password,  handlePasswordChange, setPasswordError] = useInput({})
     
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();

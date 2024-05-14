@@ -41,7 +41,7 @@ const Nav = () => {
     return <>
         {
             requestModal
-                && <RequestModal closeModal={switchRequestModal}/>
+                && <RequestModal closeModal={() => setRequestModal(false)}/>
         }
         <nav className="relative w-full h-24 flex items-center justify-end px-4 py-1 gap-5 border-b-[1px] border-slate-400 shadow-lg z-10 bg-white">
             {

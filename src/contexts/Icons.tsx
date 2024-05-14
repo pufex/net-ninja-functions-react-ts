@@ -7,6 +7,8 @@ import { FaLock } from "react-icons/fa";
 import { FaUnlock } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { MdOutlineArrowDropDown } from "react-icons/md";
+import { FaArrowUp } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 
 export type IconsContextType = {
     AiOutlineLoading3Quarters: IconType,
@@ -14,6 +16,8 @@ export type IconsContextType = {
     FaUnlock: IconType,
     IoClose: IconType,
     MdOutlineArrowDropDown: IconType,
+    FaArrowUp: IconType,
+    FaPlus: IconType,
 }
 
 const IconsContext = createContext<IconsContextType | null>(null)
@@ -38,6 +42,8 @@ const IconsProvider = ({
         FaUnlock,
         IoClose,
         MdOutlineArrowDropDown,
+        FaArrowUp,
+        FaPlus,
     }
 
     return <IconsContext.Provider
